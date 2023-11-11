@@ -27,4 +27,4 @@ class EntrySerializer(serializers.Serializer):
 class GetEntrySerializer(serializers.ModelSerializer):
     class Meta:
         model = Entry
-        field = "__all__"
+        fields = "__all__"
