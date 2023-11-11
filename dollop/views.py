@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from .serializers import UserSerializer, GetUserSerializer
 
 
-@api_view('GET', 'POST')
+@api_view(['GET', 'POST'])
 def user_list(request):
     if request.method == 'GET':
         users = User.objects.all()
@@ -16,8 +16,8 @@ def user_list(request):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             new_user = serializer.save()
-            user = User.objects.create(username=new_user['username'],
-                                       password=new_user['password'])
+            user = User.objects.create_user(username=new_user['username'],
+                                            password=new_user['password'])
             serializer = GetUserSerializer(user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
