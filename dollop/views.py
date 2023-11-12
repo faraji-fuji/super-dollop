@@ -19,8 +19,13 @@ def user_list(request):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             new_user = serializer.save()
-            user = User.objects.create_user(username=new_user['username'],
-                                            password=new_user['password'])
+
+            try:
+                user = User.objects.create_user(username=new_user['username'],
+                                                password=new_user['password'])
+            except:
+                return Response({"detail": "user with email already exists"}, status=status.HTTP_400_BAD_REQUEST)
+
             serializer = GetUserSerializer(user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
