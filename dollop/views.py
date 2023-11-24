@@ -17,18 +17,19 @@ def user_list(request):
 
     if request.method == 'POST':
         serializer = UserSerializer(data=request.data)
-        if serializer.is_valid():
-            new_user = serializer.save()
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-            try:
-                user = User.objects.create_user(username=new_user['username'],
-                                                password=new_user['password'])
-            except:
-                return Response({"detail": "user with email already exists"}, status=status.HTTP_400_BAD_REQUEST)
+        new_user = serializer.save()
 
-            serializer = GetUserSerializer(user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            user = User.objects.create_user(username=new_user['username'],
+                                            password=new_user['password'])
+        except:
+            return Response({"detail": "user with email already exists"}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = GetUserSerializer(user)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 @api_view(['POST'])
